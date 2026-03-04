@@ -2,6 +2,14 @@
 name = "pastebin"
 version = "0.1.0"
 edition = "2024"
+license = "AGPL-3.0-or-later"
+authors = ["ArkhamCookie <cargo@mail.arkhamcookie.com>"]
+description = "A pastebin service using Turso as a database and experimenting with different backends."
+homepage = "https://github.com/ArkhamCookie/turso-pastebin"
+repository = "https://github.com/ArkhamCookie/turso-pastebin"
+readme = "README.md"
+keywords = ["pastebin"]
+exclude = []
 
 [dependencies]
 clap = { version = "4.5.60", features = ["derive", "cargo"] }
