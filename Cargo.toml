@@ -13,6 +13,12 @@ exclude = []
 
 [dependencies]
 clap = { version = "4.5.60", features = ["derive", "cargo"] }
+http-body-util = { version = "0.1.3", optional = true }
+hyper = { version = "1.8.1", features = ["full"], optional = true }
+hyper-util = { version = "0.1.20", features = ["full"], optional = true }
 rand = "0.10.0"
 tokio = { version = "1.50.0", features = ["rt-multi-thread", "macros"] }
 turso = "0.5.0"
+
+[features]
+hyper = ["dep:http-body-util", "dep:hyper", "dep:hyper-util"]
