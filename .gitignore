@@ -23,3 +23,8 @@ target/
 .vscode/
 .idea/
 .vim
+
+## Outputs
+*.db
+# turso
+*.db-wal
