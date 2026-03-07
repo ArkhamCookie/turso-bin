@@ -16,11 +16,12 @@ use turso::Connection;
 
 use tokio::sync::RwLock;
 
+/// App state for axum
 #[derive(Debug)]
 pub struct AppState {
 	pub connection: Connection,
 }
-
+/// Shared state of data for axum
 pub type SharedState = Arc<RwLock<AppState>>;
 
 /// Response for getting the version of pastebin
@@ -29,6 +30,7 @@ pub struct VersionResponse {
 	pub version: String,
 }
 
+/// Get all pastes from database using axum's state and return in JSON response
 pub async fn get_pastes(State(state): State<SharedState>) -> impl IntoResponse {
 	let state = state.read().await;
 
