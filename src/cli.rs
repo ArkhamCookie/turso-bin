@@ -44,6 +44,10 @@ pub(crate) struct Args {
 	#[command(subcommand)]
 	pub(crate) command: PastebinCommand,
 
+	/// Config file to use
+	#[arg(short, long)]
+	pub(crate) config: Option<PathBuf>,
+
 	/// Manually set the database file to be used
 	#[arg(short, long)]
 	pub(crate) database_file: Option<PathBuf>,

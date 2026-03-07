@@ -1,4 +1,5 @@
 use crate::cli::{Args, PastebinCommand};
+use crate::config::get_config;
 
 use turso_bin::pastes::{Paste, Pastes};
 
@@ -25,6 +26,8 @@ use turso_bin::backends::axum::{
 
 /// Cli args and commands for clap
 pub(crate) mod cli;
+/// Config for pastebin
+pub(crate) mod config;
 
 /// If fetching by id or link
 enum GetBy {
@@ -44,7 +47,8 @@ async fn main() {
 		exit(0);
 	}
 
-	// TODO: Get default database file from TOML config?
+	let config = get_config(&args);
+
 	const DEFAULT_DATABASE_FILE: &str = "sqlite.db";
 	let mut path = PathBuf::from(DEFAULT_DATABASE_FILE);
 
@@ -52,6 +56,8 @@ async fn main() {
 		path = args
 			.database_file
 			.expect("failed to get given database file");
+	} else if config.database_file.is_some() {
+		path = config.database_file.unwrap();
 	}
 
 	let database = Builder::new_local(path.to_str().expect("failed to convert path to str"))
@@ -183,6 +189,8 @@ async fn main() {
 			let mut serve_port: u16 = 8080;
 			if port.is_some() {
 				serve_port = port.unwrap();
+			} else if config.port.is_some() {
+				serve_port = config.port.unwrap();
 			}
 
 			let address = SocketAddr::from(([127, 0, 0, 1], serve_port));
