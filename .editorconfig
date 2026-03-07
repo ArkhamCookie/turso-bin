@@ -13,6 +13,3 @@ indent_size = 2
 
 [*.{md,nix,py,sh,yml,yaml}]
 indent_style = space
-
-[tests/data/*.html]
-indent_style = space
