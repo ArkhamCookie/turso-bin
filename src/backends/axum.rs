@@ -31,7 +31,10 @@ pub struct VersionResponse {
 }
 
 /// Get paste by id
-pub async fn get_paste_by_id(Path(id): Path<u64>, State(state): State<SharedState>) -> impl IntoResponse {
+pub async fn get_paste_by_id(
+	Path(id): Path<u64>,
+	State(state): State<SharedState>,
+) -> impl IntoResponse {
 	let state = state.read().await;
 	let connection = state.connection.clone();
 
@@ -39,7 +42,10 @@ pub async fn get_paste_by_id(Path(id): Path<u64>, State(state): State<SharedStat
 }
 
 /// Get paste by link
-pub async fn get_paste_by_link(Path(link): Path<String>, State(state): State<SharedState>) -> impl IntoResponse {
+pub async fn get_paste_by_link(
+	Path(link): Path<String>,
+	State(state): State<SharedState>,
+) -> impl IntoResponse {
 	let state = state.read().await;
 	let connection = state.connection.clone();
 
@@ -59,7 +65,5 @@ pub async fn get_pastes(State(state): State<SharedState>) -> impl IntoResponse {
 pub async fn version() -> Json<VersionResponse> {
 	let version = crate_version!().to_string();
 
-	Json(VersionResponse {
-		version,
-	})
+	Json(VersionResponse { version })
 }
