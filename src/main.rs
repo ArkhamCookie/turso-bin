@@ -27,6 +27,12 @@ use tokio::sync::RwLock;
 /// Cli args and commands for clap
 pub(crate) mod cli;
 
+/// If fetching by id or link
+enum GetBy {
+	Id,
+	Link,
+}
+
 #[tokio::main]
 async fn main() {
 	let args = Args::parse();
@@ -103,6 +109,52 @@ async fn main() {
 
 			let id = paste.unwrap().id;
 			println!("paste {} added", id);
+
+			exit(0)
+		}
+		PastebinCommand::Get {
+			id,
+			link,
+		} => {
+			let paste: Result<Option<Paste>, turso::Error>;
+			let get_by: GetBy;
+
+			if let Some(id) = id {
+				paste = Paste::get_by_id(&connection, id).await;
+				get_by = GetBy::Id;
+			} else if let Some(link) = link {
+				paste = Paste::get_by_link(&connection, link).await;
+				get_by = GetBy::Link;
+			} else {
+				eprintln!("ERROR: provide either link or id of paste");
+				exit(2)
+			}
+
+			if let Err(error) = paste {
+				eprintln!("error getting paste: {:?}", error);
+				exit(1)
+			}
+
+			let paste = paste.unwrap();
+
+			match get_by {
+				GetBy::Id => {
+					if paste.is_none() {
+						println!("paste not found, no paste by that id");
+						exit(0)
+					}
+				}
+				GetBy::Link => {
+					if paste.is_none() {
+						println!("paste not found, no paste by that link");
+						exit(0)
+					}
+				}
+			}
+
+			let paste = paste.unwrap();
+
+			println!("{:?}", paste);
 
 			exit(0)
 		}

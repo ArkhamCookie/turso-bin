@@ -66,6 +66,54 @@ impl Paste {
 		})
 	}
 
+	pub async fn get_by_id(connection: &Connection, id: u64) -> Result<Option<Self>, turso::Error> {
+		let mut rows = connection.query("SELECT * FROM pastebin WHERE id = ?1", [id]).await?;
+
+		let row = rows.next().await?;
+		if row.is_none() {
+			return Ok(None)
+		}
+
+		let paste_query = row.unwrap();
+
+		let id = paste_query.get_value(0)?;
+		let id = id.as_integer().expect("unable to get id from value");
+		let link = paste_query.get_value(1)?.as_text().expect("unable to get link from value").to_string();
+		let paste_content = paste_query.get_value(2)?.as_text().expect("unable to get paste_content from value").to_string();
+		let timestamp = paste_query.get_value(3)?.as_text().expect("unable to get timestamp from value").to_string();
+
+		Ok(Some(Self {
+			id: *id,
+			link,
+			paste_content,
+			timestamp,
+		}))
+	}
+
+	pub async fn get_by_link(connection: &Connection, link: String) -> Result<Option<Self>, turso::Error> {
+		let mut rows = connection.query("SELECT * FROM pastebin WHERE link = ?1", [link]).await?;
+
+		let row = rows.next().await?;
+		if row.is_none() {
+			return Ok(None)
+		}
+
+		let paste_query = row.unwrap();
+
+		let id = paste_query.get_value(0)?;
+		let id = id.as_integer().expect("unable to get id from value");
+		let link = paste_query.get_value(1)?.as_text().expect("unable to get link from value").to_string();
+		let paste_content = paste_query.get_value(2)?.as_text().expect("unable to get paste_content from value").to_string();
+		let timestamp = paste_query.get_value(3)?.as_text().expect("unable to get timestamp from value").to_string();
+
+		Ok(Some(Self {
+			id: *id,
+			link,
+			paste_content,
+			timestamp,
+		}))
+	}
+
 	pub async fn remove(connection: &Connection, id: u64) -> Result<(), turso::Error> {
 		let sql_statement = format!("DELETE FROM pastebin WHERE id = {}", id);
 
