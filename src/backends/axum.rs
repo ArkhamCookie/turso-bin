@@ -38,6 +38,14 @@ pub async fn get_paste_by_id(Path(id): Path<u64>, State(state): State<SharedStat
 	Json(Paste::get_by_id(&connection, id).await.unwrap())
 }
 
+/// Get paste by link
+pub async fn get_paste_by_link(Path(link): Path<String>, State(state): State<SharedState>) -> impl IntoResponse {
+	let state = state.read().await;
+	let connection = state.connection.clone();
+
+	Json(Paste::get_by_link(&connection, link).await.unwrap())
+}
+
 /// Get all pastes from database using axum's state and return in JSON response
 pub async fn get_pastes(State(state): State<SharedState>) -> impl IntoResponse {
 	let state = state.read().await;

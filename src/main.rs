@@ -13,7 +13,7 @@ use tokio::net::TcpListener;
 use turso::Builder;
 
 #[cfg(feature = "axum")]
-use turso_bin::backends::axum::{AppState, get_paste_by_id, get_pastes, version};
+use turso_bin::backends::axum::{AppState, get_pastes, get_paste_by_id, get_paste_by_link, version};
 #[cfg(feature = "axum")]
 use std::sync::Arc;
 #[cfg(feature = "axum")]
@@ -208,6 +208,7 @@ async fn main() {
 				.route("/", get(version))
 				.route("/version", get(version))
 				.route("/paste/by_id/{id}", get(get_paste_by_id))
+				.route("/paste/by_link/{link}", get(get_paste_by_link))
 				.route("/pastes", get(get_pastes))
 				.with_state(state);
 
