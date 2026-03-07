@@ -30,6 +30,7 @@ pub struct VersionResponse {
 	pub version: String,
 }
 
+/// Get paste by id
 pub async fn get_paste_by_id(Path(id): Path<u64>, State(state): State<SharedState>) -> impl IntoResponse {
 	let state = state.read().await;
 	let connection = state.connection.clone();
