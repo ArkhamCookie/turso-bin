@@ -7,4 +7,4 @@ pub mod backends;
 pub mod pastes;
 
 /// Main utils for pastebin
-pub mod utils;
+pub(crate) mod utils;
