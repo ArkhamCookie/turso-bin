@@ -147,14 +147,14 @@ async fn main() {
 			let address = SocketAddr::from(([127, 0, 0, 1], serve_port));
 			let listener = TcpListener::bind(address).await.unwrap();
 
+			println!("running on http://{}", address);
+
 			#[cfg(feature = "hyper")]
 			let http = http1::Builder::new();
 			#[cfg(feature = "hyper")]
 			let graceful = hyper_util::server::graceful::GracefulShutdown::new();
 			#[cfg(feature = "hyper")]
 			let mut signal = std::pin::pin!(shutdown_signal());
-
-			println!("running on http://{}", address);
 
 			#[cfg(feature = "hyper")]
 			loop {
