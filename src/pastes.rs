@@ -66,7 +66,7 @@ impl Paste {
 		})
 	}
 
-	pub async fn remove(connection: &Connection, id: i64) -> Result<(), turso::Error> {
+	pub async fn remove(connection: &Connection, id: u64) -> Result<(), turso::Error> {
 		let sql_statement = format!("DELETE FROM pastebin WHERE id = {}", id);
 
 		connection.execute(

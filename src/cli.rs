@@ -17,7 +17,7 @@ pub(crate) enum PastebinCommand {
 	/// Remove a paste
 	Rm {
 		/// Id of the paste to remove
-		id: i64,
+		id: u64,
 	},
 	/// Serve pastebin server
 	Serve {
