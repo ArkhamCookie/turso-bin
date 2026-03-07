@@ -12,6 +12,15 @@ use tokio::net::TcpListener;
 
 use turso::Builder;
 
+#[cfg(feature = "axum")]
+use pastebin::backends::axum::version;
+
+#[cfg(feature = "axum")]
+use axum::{
+	routing::get,
+	Router,
+};
+
 #[cfg(feature = "hyper")]
 use pastebin::backends::hyper::hello;
 #[cfg(feature = "hyper")]
@@ -148,6 +157,15 @@ async fn main() {
 			let listener = TcpListener::bind(address).await.unwrap();
 
 			println!("running on http://{}", address);
+
+			#[cfg(feature = "axum")]
+			let app: Router<()> = Router::new()
+				.route("/", get(version))
+				.route("/version", get(version));
+				// .route("/pastes", get());
+
+			#[cfg(feature = "axum")]
+			axum::serve(listener, app).await.unwrap();
 
 			#[cfg(feature = "hyper")]
 			let http = http1::Builder::new();
