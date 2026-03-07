@@ -13,11 +13,11 @@ use tokio::net::TcpListener;
 use turso::Builder;
 
 #[cfg(feature = "hyper")]
+use pastebin::backends::hyper::hello;
+#[cfg(feature = "hyper")]
 use hyper::{server::conn::http1, service::service_fn};
 #[cfg(feature = "hyper")]
 use hyper_util::rt::TokioIo;
-#[cfg(feature = "hyper")]
-use pastebin::backends::hyper::hello;
 
 /// Cli args and commands for clap
 pub(crate) mod cli;
