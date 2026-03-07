@@ -24,23 +24,8 @@ use axum::{
 #[cfg(feature = "axum")]
 use tokio::sync::RwLock;
 
-#[cfg(feature = "hyper")]
-use turso_bin::backends::hyper::hello;
-#[cfg(feature = "hyper")]
-use hyper::{server::conn::http1, service::service_fn};
-#[cfg(feature = "hyper")]
-use hyper_util::rt::TokioIo;
-
 /// Cli args and commands for clap
 pub(crate) mod cli;
-
-#[cfg(feature = "hyper")]
-/// Send a shutdown signal using tokio
-async fn shutdown_signal() {
-	tokio::signal::ctrl_c()
-		.await
-		.expect("failed to install CTRL+C signal handler");
-}
 
 #[tokio::main]
 async fn main() {
@@ -175,45 +160,6 @@ async fn main() {
 
 			#[cfg(feature = "axum")]
 			axum::serve(listener, app).await.unwrap();
-
-			#[cfg(feature = "hyper")]
-			let http = http1::Builder::new();
-			#[cfg(feature = "hyper")]
-			let graceful = hyper_util::server::graceful::GracefulShutdown::new();
-			#[cfg(feature = "hyper")]
-			let mut signal = std::pin::pin!(shutdown_signal());
-
-			#[cfg(feature = "hyper")]
-			loop {
-				tokio::select! {
-					Ok((stream, _address)) = listener.accept() => {
-						let io = TokioIo::new(stream);
-						let connection = http.serve_connection(io, service_fn(hello));
-
-						let future = graceful.watch(connection);
-						tokio::spawn(async move {
-							if let Err(error) = future.await {
-								eprintln!("Error serving connectio: {:?}", error);
-							}
-						});
-					},
-					_ = &mut signal => {
-						drop(listener);
-						println!("\ngraceful shutdown signal received");
-						break;
-					}
-				}
-			}
-
-			#[cfg(feature = "hyper")]
-			tokio::select! {
-				_ = graceful.shutdown() => {
-					println!("all connections gracefully closed");
-				},
-				_ = tokio::time::sleep(std::time::Duration::from_secs(10)) => {
-					println!("timed out wait for all connections to close")
-				}
-			}
 		}
 	}
 

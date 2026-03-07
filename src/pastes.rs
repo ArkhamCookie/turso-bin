@@ -2,8 +2,9 @@
 
 use crate::utils::random_link;
 
-use serde::Serialize;
 use turso::Connection;
+
+use serde::Serialize;
 
 /// Data for a paste
 #[derive(Debug, Serialize)]
