@@ -13,16 +13,15 @@ use tokio::net::TcpListener;
 use turso::Builder;
 
 #[cfg(feature = "axum")]
-use turso_bin::backends::axum::{AppState, get_pastes, get_paste_by_id, get_paste_by_link, version};
+use axum::{Router, routing::get};
 #[cfg(feature = "axum")]
 use std::sync::Arc;
 #[cfg(feature = "axum")]
-use axum::{
-	routing::get,
-	Router,
-};
-#[cfg(feature = "axum")]
 use tokio::sync::RwLock;
+#[cfg(feature = "axum")]
+use turso_bin::backends::axum::{
+	AppState, get_paste_by_id, get_paste_by_link, get_pastes, version,
+};
 
 /// Cli args and commands for clap
 pub(crate) mod cli;
@@ -78,24 +77,22 @@ async fn main() {
 
 	if args.force_init {
 		connection
-			.execute(
-				"DROP TABLE pastebin",
-			()
-		)
-		.await
-		.expect("unable to drop database");
+			.execute("DROP TABLE pastebin", ())
+			.await
+			.expect("unable to drop database");
 
 		connection
-			.execute("CREATE TABLE pastebin (
+			.execute(
+				"CREATE TABLE pastebin (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			link TEXT,
 			content TEXT,
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 			)",
-			()
-		)
-		.await
-		.expect("unable to create forced database");
+				(),
+			)
+			.await
+			.expect("unable to create forced database");
 	}
 
 	match args.command {
@@ -112,10 +109,7 @@ async fn main() {
 
 			exit(0)
 		}
-		PastebinCommand::Get {
-			id,
-			link,
-		} => {
+		PastebinCommand::Get { id, link } => {
 			let paste: Result<Option<Paste>, turso::Error>;
 			let get_by: GetBy;
 
@@ -174,9 +168,7 @@ async fn main() {
 
 			exit(0)
 		}
-		PastebinCommand::Rm {
-			id
-		} => {
+		PastebinCommand::Rm { id } => {
 			let removed = Paste::remove(&connection, id).await;
 
 			if let Err(error) = removed {
@@ -199,9 +191,7 @@ async fn main() {
 			println!("running on http://{}", address);
 
 			#[cfg(feature = "axum")]
-			let state = Arc::new(RwLock::new(AppState {
-				connection,
-			}));
+			let state = Arc::new(RwLock::new(AppState { connection }));
 
 			#[cfg(feature = "axum")]
 			let app: Router<()> = Router::new()
