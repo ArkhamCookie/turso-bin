@@ -1,6 +1,6 @@
 use crate::cli::{Args, PastebinCommand};
 
-use pastebin::pastes::{Paste, Pastes};
+use turso_bin::pastes::{Paste, Pastes};
 
 use std::net::SocketAddr;
 use std::path::PathBuf;
@@ -13,7 +13,7 @@ use tokio::net::TcpListener;
 use turso::Builder;
 
 #[cfg(feature = "axum")]
-use pastebin::backends::axum::version;
+use turso_bin::backends::axum::version;
 
 #[cfg(feature = "axum")]
 use axum::{
@@ -22,7 +22,7 @@ use axum::{
 };
 
 #[cfg(feature = "hyper")]
-use pastebin::backends::hyper::hello;
+use turso_bin::backends::hyper::hello;
 #[cfg(feature = "hyper")]
 use hyper::{server::conn::http1, service::service_fn};
 #[cfg(feature = "hyper")]

@@ -1381,22 +1381,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "57c0d7b74b563b49d38dae00a0c37d4d6de9b432382b2892f0574ddcae73fd0a"
 
 [[package]]
-name = "pastebin"
-version = "0.1.0"
-dependencies = [
- "axum",
- "clap",
- "http-body-util",
- "hyper",
- "hyper-util",
- "rand 0.10.0",
- "serde",
- "serde_json",
- "tokio",
- "turso",
-]
-
-[[package]]
 name = "percent-encoding"
 version = "2.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2225,6 +2209,22 @@ dependencies = [
  "tracing-subscriber",
  "turso_sdk_kit",
  "turso_sync_sdk_kit",
+]
+
+[[package]]
+name = "turso-bin"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "clap",
+ "http-body-util",
+ "hyper",
+ "hyper-util",
+ "rand 0.10.0",
+ "serde",
+ "serde_json",
+ "tokio",
+ "turso",
 ]
 
 [[package]]
