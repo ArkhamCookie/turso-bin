@@ -1,11 +1,11 @@
 //! axum backend
 
-use crate::pastes::Pastes;
+use crate::pastes::{Paste, Pastes};
 
 use std::sync::Arc;
 
 use axum::Json;
-use axum::extract::State;
+use axum::extract::{Path, State};
 use axum::response::IntoResponse;
 
 use clap::crate_version;
@@ -28,6 +28,22 @@ pub type SharedState = Arc<RwLock<AppState>>;
 #[derive(Serialize)]
 pub struct VersionResponse {
 	pub version: String,
+}
+
+/// Get paste by id
+pub async fn get_paste_by_id(Path(id): Path<u64>, State(state): State<SharedState>) -> impl IntoResponse {
+	let state = state.read().await;
+	let connection = state.connection.clone();
+
+	Json(Paste::get_by_id(&connection, id).await.unwrap())
+}
+
+/// Get paste by link
+pub async fn get_paste_by_link(Path(link): Path<String>, State(state): State<SharedState>) -> impl IntoResponse {
+	let state = state.read().await;
+	let connection = state.connection.clone();
+
+	Json(Paste::get_by_link(&connection, link).await.unwrap())
 }
 
 /// Get all pastes from database using axum's state and return in JSON response

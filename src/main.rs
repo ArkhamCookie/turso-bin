@@ -13,7 +13,7 @@ use tokio::net::TcpListener;
 use turso::Builder;
 
 #[cfg(feature = "axum")]
-use turso_bin::backends::axum::{AppState, get_pastes, version};
+use turso_bin::backends::axum::{AppState, get_pastes, get_paste_by_id, get_paste_by_link, version};
 #[cfg(feature = "axum")]
 use std::sync::Arc;
 #[cfg(feature = "axum")]
@@ -26,6 +26,12 @@ use tokio::sync::RwLock;
 
 /// Cli args and commands for clap
 pub(crate) mod cli;
+
+/// If fetching by id or link
+enum GetBy {
+	Id,
+	Link,
+}
 
 #[tokio::main]
 async fn main() {
@@ -106,6 +112,52 @@ async fn main() {
 
 			exit(0)
 		}
+		PastebinCommand::Get {
+			id,
+			link,
+		} => {
+			let paste: Result<Option<Paste>, turso::Error>;
+			let get_by: GetBy;
+
+			if let Some(id) = id {
+				paste = Paste::get_by_id(&connection, id).await;
+				get_by = GetBy::Id;
+			} else if let Some(link) = link {
+				paste = Paste::get_by_link(&connection, link).await;
+				get_by = GetBy::Link;
+			} else {
+				eprintln!("ERROR: provide either link or id of paste");
+				exit(2)
+			}
+
+			if let Err(error) = paste {
+				eprintln!("error getting paste: {:?}", error);
+				exit(1)
+			}
+
+			let paste = paste.unwrap();
+
+			match get_by {
+				GetBy::Id => {
+					if paste.is_none() {
+						println!("paste not found, no paste by that id");
+						exit(0)
+					}
+				}
+				GetBy::Link => {
+					if paste.is_none() {
+						println!("paste not found, no paste by that link");
+						exit(0)
+					}
+				}
+			}
+
+			let paste = paste.unwrap();
+
+			println!("{:?}", paste);
+
+			exit(0)
+		}
 		PastebinCommand::List {} => {
 			let pastes = Pastes::fetch(&connection).await;
 
@@ -155,6 +207,8 @@ async fn main() {
 			let app: Router<()> = Router::new()
 				.route("/", get(version))
 				.route("/version", get(version))
+				.route("/paste/by_id/{id}", get(get_paste_by_id))
+				.route("/paste/by_link/{link}", get(get_paste_by_link))
 				.route("/pastes", get(get_pastes))
 				.with_state(state);
 

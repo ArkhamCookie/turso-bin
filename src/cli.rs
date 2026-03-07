@@ -12,12 +12,22 @@ pub(crate) enum PastebinCommand {
 		/// Paste content
 		content: String,
 	},
+	/// Get a paste based ID or link
+	Get {
+		/// ID of paste
+		#[arg(short, long)]
+		id: Option<u64>,
+
+		/// Link of paste
+		#[arg(short, long)]
+		link: Option<String>,
+	},
 	/// List pastes from pastebin database
 	List {},
 	/// Remove a paste
 	Rm {
 		/// Id of the paste to remove
-		id: i64,
+		id: u64,
 	},
 	/// Serve pastebin server
 	Serve {
