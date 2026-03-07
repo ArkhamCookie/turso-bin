@@ -186,6 +186,7 @@ async fn main() {
 			}
 
 			let address = SocketAddr::from(([127, 0, 0, 1], serve_port));
+			#[allow(unused_variables)] // Used when databases are enabled
 			let listener = TcpListener::bind(address).await.unwrap();
 
 			println!("running on http://{}", address);
