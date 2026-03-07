@@ -13,13 +13,16 @@ use tokio::net::TcpListener;
 use turso::Builder;
 
 #[cfg(feature = "axum")]
-use turso_bin::backends::axum::version;
-
+use turso_bin::backends::axum::{AppState, get_pastes, version};
+#[cfg(feature = "axum")]
+use std::sync::Arc;
 #[cfg(feature = "axum")]
 use axum::{
 	routing::get,
 	Router,
 };
+#[cfg(feature = "axum")]
+use tokio::sync::RwLock;
 
 #[cfg(feature = "hyper")]
 use turso_bin::backends::hyper::hello;
@@ -159,10 +162,16 @@ async fn main() {
 			println!("running on http://{}", address);
 
 			#[cfg(feature = "axum")]
+			let state = Arc::new(RwLock::new(AppState {
+				connection,
+			}));
+
+			#[cfg(feature = "axum")]
 			let app: Router<()> = Router::new()
 				.route("/", get(version))
-				.route("/version", get(version));
-				// .route("/pastes", get());
+				.route("/version", get(version))
+				.route("/pastes", get(get_pastes))
+				.with_state(state);
 
 			#[cfg(feature = "axum")]
 			axum::serve(listener, app).await.unwrap();

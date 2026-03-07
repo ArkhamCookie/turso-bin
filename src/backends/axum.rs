@@ -1,15 +1,40 @@
 //! axum backend
 
+use crate::pastes::Pastes;
+
+use std::sync::Arc;
+
 use axum::Json;
+use axum::extract::State;
+use axum::response::IntoResponse;
 
 use clap::crate_version;
 
 use serde::Serialize;
 
+use turso::Connection;
+
+use tokio::sync::RwLock;
+
+#[derive(Debug)]
+pub struct AppState {
+	pub connection: Connection,
+}
+
+pub type SharedState = Arc<RwLock<AppState>>;
+
 /// Response for getting the version of pastebin
 #[derive(Serialize)]
 pub struct VersionResponse {
 	pub version: String,
+}
+
+pub async fn get_pastes(State(state): State<SharedState>) -> impl IntoResponse {
+	let state = state.read().await;
+
+	let connection = state.connection.clone();
+
+	Json(Pastes::fetch(&connection).await.unwrap())
 }
 
 /// Give version of pastebin

@@ -2,10 +2,11 @@
 
 use crate::utils::random_link;
 
+use serde::Serialize;
 use turso::Connection;
 
 /// Data for a paste
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct Paste {
 	pub id: i64,
 	pub link: String,
@@ -76,6 +77,7 @@ impl Paste {
 }
 
 /// A collection of pastes
+#[derive(Debug, Serialize)]
 pub struct Pastes {
 	/// Pastes
 	pub pastes: Vec<Paste>,
