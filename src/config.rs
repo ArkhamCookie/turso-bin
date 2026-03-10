@@ -10,14 +10,12 @@ use directories::ProjectDirs;
 
 use serde::Deserialize;
 
-
 /// turso-bin config struct
 #[derive(Debug, Deserialize, PartialEq)]
 pub(crate) struct Config {
 	pub(crate) database_file: Option<PathBuf>,
 	pub(crate) port: Option<u16>,
 }
-
 
 /// Get config from file
 fn get_config_from_file(config_file: &PathBuf) -> Config {
@@ -60,8 +58,9 @@ fn get_config_from_dirs() -> Config {
 
 	let config_path = config_dirs.join("config.toml");
 
-	let default_toml = String::from("database_file = \"sqlite.db\"
-port = 8080"
+	let default_toml = String::from(
+		"database_file = \"sqlite.db\"
+port = 8080",
 	);
 
 	if !config_path.exists() {
