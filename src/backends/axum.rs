@@ -6,6 +6,7 @@ use std::sync::Arc;
 
 use axum::Json;
 use axum::extract::{Path, State};
+use axum::http::StatusCode;
 use axum::response::IntoResponse;
 
 use clap::crate_version;
@@ -28,6 +29,28 @@ pub type SharedState = Arc<RwLock<AppState>>;
 #[derive(Serialize)]
 pub struct VersionResponse {
 	pub version: String,
+}
+
+/// Create a paste
+pub async fn create_paste(
+	State(state): State<SharedState>,
+	Json(paste_content): Json<String>,
+) -> Result<Json<Paste>, StatusCode> {
+	let state = state.write().await;
+	let connection = state.connection.clone();
+
+	let paste = Paste::create_new(&connection, paste_content).await;
+
+	match paste {
+		Ok(paste) => {
+			return Ok(Json(paste));
+		}
+		Err(error) => {
+			// TODO: Match different turso errors
+			eprintln!("ERROR: Issue creating paste: {}", error);
+			return Err(StatusCode::INTERNAL_SERVER_ERROR);
+		}
+	}
 }
 
 /// Get paste by id

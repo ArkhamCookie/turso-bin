@@ -21,7 +21,7 @@ use std::sync::Arc;
 use tokio::sync::RwLock;
 #[cfg(feature = "axum")]
 use turso_bin::backends::axum::{
-	AppState, get_paste_by_id, get_paste_by_link, get_pastes, version,
+	AppState, create_paste, get_paste_by_id, get_paste_by_link, get_pastes, version,
 };
 
 /// Cli args and commands for clap
@@ -209,6 +209,7 @@ async fn main() {
 				.route("/paste/by_id/{id}", get(get_paste_by_id))
 				.route("/paste/by_link/{link}", get(get_paste_by_link))
 				.route("/pastes", get(get_pastes))
+				.route("/pastes/create", get(create_paste))
 				.with_state(state);
 
 			#[cfg(feature = "axum")]
